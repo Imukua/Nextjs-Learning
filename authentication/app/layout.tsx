@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: "Sign in and sign up fragments",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
