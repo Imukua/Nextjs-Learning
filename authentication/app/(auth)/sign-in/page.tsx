@@ -15,8 +15,11 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { z } from "zod";
+import { login } from "@/lib/actions/auth/login";
+import { useTransition } from "react";
 
 export default function SignIn() {
+    const [isPending, startTransition] = useTransition(false);
     const form = useForm<z.infer<typeof LoginSchema>>({
         resolver: zodResolver(LoginSchema),
         defaultValues: {
@@ -26,13 +29,17 @@ export default function SignIn() {
     })
 
     const onSubmit = (values: z.infer<typeof LoginSchema>) => {
-        console.log(values);
+        startTransition(() => {
+            isPending(true);
+            login(values);
+        });
+        isPending(false);
     }
     return (
         <AuthWrapper
             headerLabel="Welcome Back!"
             buttonLabel="Dont have an account ?"
-            path="/sign-in"
+            path="/sign-up"
             showSocial={true}
         >
             <Form {...form}>
@@ -45,7 +52,11 @@ export default function SignIn() {
                                 <FormItem>
                                     <FormLabel>Email</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="user@email.com" {...field} />
+                                        <Input
+                                            disabled={isPending}
+                                            type="email"
+                                            placeholder="user@email.com" {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -58,7 +69,11 @@ export default function SignIn() {
                                 <FormItem>
                                     <FormLabel >Password</FormLabel>
                                     <FormControl>
-                                        <Input placeholder="****" {...field} />
+                                        <Input
+                                            type="password"
+                                            disabled={isPending}
+                                            placeholder="****" {...field}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -66,6 +81,7 @@ export default function SignIn() {
                         />
                     </div>
                     <Button
+                        disabled={isPending}
                         type="submit"
                         className="w-full"
                     >
